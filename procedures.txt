@@ -1,0 +1,381 @@
+CREATE PROCEDURE DodajUzytkownika
+
+	@Imie NVARCHAR (15),
+	@Nazwisko NVARCHAR (15),
+	@Adres NVARCHAR(40),
+	@Numer_Komputera NVARCHAR (15),
+	@Numer_Telefonu NVARCHAR (14),
+	@Email NVARCHAR (50)
+	
+	AS
+	
+BEGIN
+
+INSERT INTO Uzytkownicy (Imie, Nazwisko, Adres, Numer_Komputera, Numer_Telefonu, Email)
+VALUES (@Imie, @Nazwisko, @Adres, @Numer_Komputera, @Numer_Telefonu, @Email);
+
+END;
+	
+
+CREATE PROCEDURE DodajSerwis
+
+@Nazwa_Serwisu NVARCHAR(25),
+@Status_Serwisu NVARCHAR(10),
+@Wlasciciel NVARCHAR (30)
+
+AS
+
+BEGIN 
+
+INSERT INTO Serwis(Nazwa, Status_Serwisu, Wlasciciel)
+VALUES (@Nazwa_Serwisu, @Status_Serwisu, @Wlasciciel);
+
+END; 
+	
+	
+CREATE PROCEDURE DodajPrzyczyne
+    @Nazwa_Przyczyny NVARCHAR(20)
+AS
+BEGIN
+    BEGIN TRY
+        INSERT INTO Przyczyna_Problemu (Nazwa_Przyczyny)
+        VALUES (@Nazwa_Przyczyny);
+    END TRY
+    BEGIN CATCH
+        PRINT 'Błąd podczas dodawania przyczyny: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+CREATE PROCEDURE DodajGrupeWsparcia
+
+@Nazwa_Grupy NVARCHAR(40),
+@Manager NVARCHAR (30),
+@DrugiManager NVARCHAR (30),
+@Ilosc_Pracownikow INT
+
+AS
+
+BEGIN 
+
+	BEGIN TRY
+		INSERT INTO Grupa_Wsparcia (Nazwa_Grupy, Manager, Drugi_Manager, Ilosc_Pracownikow)
+		VALUES (@Nazwa_Grupy, @Manager, @DrugiManager, @Ilosc_Pracownikow);
+
+	END TRY
+    BEGIN CATCH
+	PRINT 'Błąd podczas dodawania grupy wsparcia: ' + ERROR_MESSAGE();
+ END CATCH
+END;  
+
+
+CREATE PROCEDURE DodajKategorie
+
+@Rodzaj_Zgloszenia NVARCHAR (20)
+
+AS
+
+BEGIN
+
+	BEGIN TRY
+		INSERT INTO Kategoria_Zgloszenia(Rodzaj_Zgloszenia)
+		VALUES (@Rodzaj_Zgloszenia);
+	END TRY
+	BEGIN CATCH
+	PRINT 'Błąd podczas dodawania kategorii zgłoszenia: ' + ERROR_MESSAGE();
+	END CATCH
+END; 
+
+
+CREATE PROCEDURE DodajStatus
+
+@Nazwa NVARCHAR (20),
+@Opis NVARCHAR (100)
+
+AS
+
+BEGIN
+
+
+
+INSERT INTO Status(Nazwa, Opis)
+VALUES (@Nazwa, @Opis);
+
+END; 
+
+
+
+CREATE PROCEDURE DodajZgloszenie
+
+
+@Uzytkownik INT,
+@Opis_Problemu NVARCHAR(300),
+@Przypisana_Grupa INT,
+@Serwis INT,
+@Pilnosc INT,
+@Kategoria_Zgloszenia INT,
+@Rozwiazanie NVARCHAR (300),
+@Przyczyna_Problemu INT,
+@Data_Zgloszenia DATETIME,
+@Status INT,
+@Deadline DATETIME,
+@Data_Rozwiazania DATETIME
+
+AS
+
+BEGIN
+
+
+
+INSERT INTO Zgloszenia (Uzytkownik, Opis_Problemu, Przypisana_Grupa, Serwis, Pilnosc, Kategoria_Zgloszenia, Rozwiazanie, Przyczyna_Problemu, Data_Zgloszenia, Status, Deadline, Data_Rozwiazania)
+Values(@Uzytkownik, @Opis_Problemu, @Przypisana_Grupa, @Serwis, @Pilnosc, @Kategoria_Zgloszenia, @Rozwiazanie, @Przyczyna_Problemu, @Data_Zgloszenia, @Status, @Deadline, @Data_Rozwiazania);
+
+END; 
+
+
+
+
+CREATE PROCEDURE ZaktualizujNumerKomputera
+
+@ID_Uzytkownika INT,
+@NowyKomputer NVARCHAR (15)
+
+AS 
+
+BEGIN
+UPDATE Uzytkownicy SET Numer_Komutera = @NowyKomputer WHERE ID_UZYTKOWNIKA = @ ID_Uzytkownika;
+
+END; 
+
+CREATE PROCEDURE ZaktualizujNumerTelefonu
+
+@ID_Uzytkownika INT,
+@NowyNumerTelefonu NVARCHAR (15)
+
+AS 
+
+BEGIN
+UPDATE Uzytkownicy SET Numer_Telefonu = @NowyNumerTelefonu WHERE ID_UZYTKOWNIKA = @ ID_Uzytkownika;
+
+END;
+
+
+
+
+CREATE PROCEDURE ZaktualizujAdres
+
+@ID_Uzytkownika INT,
+@NowyAdres NVARCHAR (25)
+
+AS 
+
+BEGIN
+UPDATE Uzytkownicy SET Adres = @NowyAdres WHERE ID_UZYTKOWNIKA = @ ID_Uzytkownika;
+
+END;
+
+
+
+
+
+
+CREATE PROCEDURE ZaktualizujEmail
+
+@ID_Uzytkownika INT,
+@NowyEmail NVARCHAR (15)
+
+AS 
+
+BEGIN
+UPDATE Uzytkownicy SET Email = @NowyEmail WHERE ID_UZYTKOWNIKA = @ID_Uzytkownika;
+
+END;
+
+
+CREATE PROCEDURE ZaktualizujManagerow
+
+@ID_Grupy_Wsparcia INT,
+@NowyPierwszyManager NVARCHAR(40),
+@NowyDrugiManager NVARCHAR(40)
+
+AS
+
+BEGIN
+UPDATE Grupa_Wsparcia SET Manager = @NowyPierwszyManager, Drugi_Manager = @NowyDrugiManager WHERE ID_Grupy_Wsparcia = @ID_Grupy_Wsparcia;
+
+END;
+
+
+CREATE PROCEDURE ZaktualizujLiczbePracownikow		
+
+@ID_Grupy_Wsparcia INT,
+@NowaIloscPracownikow INT
+
+AS
+
+BEGIN
+
+UPDATE Grupa_Wsparcia SET Ilosc_Pracownikow = @NowaIloscPracownikow WHERE ID_Grupy_Wsparcia = @ID_Grupy_Wsparcia;
+
+
+END;
+
+
+CREATE PROCEDURE ZmienKategorie
+
+@ID_Kategorii INT,
+@NowaNazwaKategorii NVARCHAR(20)
+
+AS
+
+BEGIN
+
+UPDATE Kategoria_Zgloszenia SET Rodzaj_Zgloszenia = @NowaNazwaKategorii WHERE ID_Kategorii_Zgloszenia = @ID_Kategorii;
+
+END;
+
+
+CREATE PROCEDURE ZmienPrzyczyneProblemu
+
+@ID_Przyczyny INT,
+@NowaNazwaPrzyczyny NVARCHAR(20)
+
+AS
+
+BEGIN
+
+UPDATE Przyczyna_Problemu SET Nazwa_Przyczyny = @NowaNazwaPrzyczyny WHERE ID_Przyczyny = @ID_Przyczyny;
+
+END;
+
+
+CREATE PROCEDURE ZmienNazweSerwisu
+
+@ID_Serwisu INT,
+@NowaNazwaSerwisu NVARCHAR(20)
+
+AS
+
+BEGIN
+
+UPDATE Serwis SET Nazwa = @NowaNazwaSerwisu WHERE ID_Serwisu = @ID_Serwisu;
+
+END;
+
+
+
+CREATE PROCEDURE ZmienStatusSerwisu
+
+@ID_Serwisu INT,
+@NowyStatus NVARCHAR(20)
+
+AS
+
+BEGIN
+
+UPDATE Serwis SET Status_Serwisu = @NowyStatus WHERE ID_Serwisu = @ID_Serwisu;
+
+END;
+
+
+
+
+CREATE PROCEDURE ZmienWlascicielaSerwisu
+
+@ID_Serwisu INT,
+@NowyWlasciciel NVARCHAR(20)
+
+AS
+
+BEGIN
+
+UPDATE Serwis SET Wlasciciel = @NowyWlasciciel WHERE ID_Serwisu = @ID_Serwisu;
+
+END;
+
+
+
+
+CREATE PROCEDURE ZmienStatus
+
+@ID_Statusu INT,
+@NowaNazwa NVARCHAR(20),
+@NowyOpis NVARCHAR (100)
+
+AS
+
+BEGIN
+
+UPDATE Status SET Nazwa = @NowaNazwa, Opis = @NowyOpis WHERE ID_Statusu = @ID_Statusu;
+
+END;
+
+
+CREATE PROCEDURE UsunZgloszenie;  
+    @ID_Zgloszenia INT
+AS  
+BEGIN  
+    DELETE FROM Zgloszenia WHERE ID_Zgloszenia = @ID_Zgloszenia;  
+END;
+
+-- Wywołanie EXEC DeleteTicket 1;
+
+
+CREATE PROCEDURE UsunGrupeWsparcia
+    @ID_Grupy_Wsparcia INT
+AS  
+BEGIN  
+    DELETE FROM Grupa_Wsparcia WHERE ID_Grupy_Wsparcia = @ID_Grupy_Wsparcia;  
+END;
+
+
+CREATE PROCEDURE UsunKategorieZgloszenia
+    @ID_Kategorii_Zgloszenia INT
+AS  
+BEGIN  
+    DELETE FROM Kategoria_Zgloszenia WHERE ID_Kategorii_Zgloszenia = @ID_Kategorii_Zgloszenia;  
+END;
+
+
+CREATE PROCEDURE UsunPrzyczyneProblemu
+	@ID_Przyczyny_Problemu INT
+AS
+BEGIN
+    DELETE FROM Przyczyna_Problemu WHERE ID_Przyczyny = @ID_Przyczyny_Problemu
+END;
+
+
+CREATE PROCEDURE UsunSerwis
+
+@ID_Serwisu INT
+
+AS
+BEGIN
+    DELETE FROM Serwis WHERE ID_Serwisu = @ID_Serwisu
+
+END;
+
+
+CREATE PROCEDURE UsunStatus
+
+@ID_Statusu INT
+
+AS
+
+BEGIN
+    DELETE FROM Status WHERE ID_Statusu = @ID_Statusu
+
+END;
+
+
+CREATE PROCEDURE UsunUzytkownika
+
+@ID_Uzytkownika INT
+
+AS
+BEGIN
+DELETE FROM Uzytkownicy WHERE ID_Uzytkownika = @ID_Uzytkownika
+END;
+
+
+

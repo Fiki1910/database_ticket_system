@@ -1,0 +1,39 @@
+CREATE FUNCTION dbo.DoIluZgloszenPrzypisanaGrupa (@Nazwa_Grupy NVARCHAR(100))    
+RETURNS INT  
+AS  
+BEGIN  
+    DECLARE @IloscZgloszen INT;  
+    SELECT @IloscZgloszen = COUNT(*)
+	FROM Zgloszenia Z
+	    JOIN Grupa_Wsparcia G ON Z.Przypisana_Grupa = G.ID_Grupy_Wsparcia
+	    WHERE G.Nazwa_Grupy = @Nazwa_Grupy;
+    RETURN @IloscZgloszen;  
+END;
+
+
+--Wywołanie.
+--SELECT dbo.dbo.DoIluZgloszenPrzypisanaGrupa('M365');
+
+
+
+CREATE FUNCTION dbo.PobierzLiczbeZgloszen (@ID_Uzytkownika INT)  
+RETURNS INT  
+AS  
+BEGIN  
+    DECLARE @IloscZgloszen INT;  
+    SELECT @IloscZgloszen = COUNT(*) FROM Zgloszenia WHERE Uzytkownik = @ID_Uzytkownika;  
+    RETURN @IloscZgloszen;  
+END;
+
+
+CREATE FUNCTION dbo.PobierzIluUzytkownikowZLokalizacji (@Adres NVARCHAR (20))
+
+ 
+RETURNS TABLE  
+AS  
+RETURN 
+    (SELECT Imie, Nazwisko, Adres
+    FROM Uzytkownicy
+    WHERE Adres LIKE @Adres);
+
+-- SELECT * FROM dbo.PobierzIluUzytkownikowZLokalizacji('ŁÓDŹ');

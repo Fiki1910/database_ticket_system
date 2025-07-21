@@ -1,0 +1,82 @@
+CREATE TRIGGER Trigger_Archiwum_Uzytkownicy_Insert
+ON Uzytkownicy
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Uzytkownicy_Archiwum (
+        Data_Zmiany, Rodzaj_Zmiany, Zmodyfikowany_Przez,
+
+        Stare_ID_Uzytkownika, Stare_Imie, Stare_Nazwisko, Stare_Adres,
+        Stare_Numer_Komputera, Stare_Numer_Telefonu, Stare_Email,
+
+        Nowe_ID_Uzytkownika, Nowe_Imie, Nowe_Nazwisko, Nowe_Adres,
+        Nowe_Numer_Komputera, Nowe_Numer_Telefonu, Nowe_Email
+    )
+    SELECT
+        GETDATE(), 'INSERT', SYSTEM_USER,
+
+        0, '', '', '',
+        NULL, NULL, NULL,
+
+        i.ID_Uzytkownika, i.Imie, i.Nazwisko, i.Adres,
+        i.Numer_Komputera, i.Numer_Telefonu, i.Email
+    FROM inserted i;
+END;
+
+
+CREATE TRIGGER trigger_Archiwum_Uzytkownicy_Update
+ON Uzytkownicy
+AFTER UPDATE
+AS
+BEGIN
+
+    INSERT INTO Uzytkownicy_Archiwum (
+        Data_Zmiany, Rodzaj_Zmiany, Zmodyfikowany_Przez,
+
+        Stare_ID_Uzytkownika, Stare_Imie, Stare_Nazwisko, Stare_Adres,
+        Stare_Numer_Komputera, Stare_Numer_Telefonu, Stare_Email,
+
+        Nowe_ID_Uzytkownika, Nowe_Imie, Nowe_Nazwisko, Nowe_Adres,
+        Nowe_Numer_Komputera, Nowe_Numer_Telefonu, Nowe_Email
+    )
+    SELECT
+        GETDATE(), 'UPDATE', SYSTEM_USER,
+
+        d.ID_Uzytkownika, d.Imie, d.Nazwisko, d.Adres,
+        d.Numer_Komputera, d.Numer_Telefonu, d.Email,
+
+        i.ID_Uzytkownika, i.Imie, i.Nazwisko, i.Adres,
+        i.Numer_Komputera, i.Numer_Telefonu, i.Email
+    FROM inserted i
+    INNER JOIN deleted d ON i.ID_Uzytkownika = d.ID_Uzytkownika;
+END;
+
+
+CREATE TRIGGER trg_Archiwum_Uzytkownicy_Delete
+ON Uzytkownicy
+AFTER DELETE
+AS
+BEGIN
+ 
+
+    INSERT INTO Uzytkownicy_Archiwum (
+        Data_Zmiany, Rodzaj_Zmiany, Zmodyfikowany_Przez,
+
+        Stare_ID_Uzytkownika, Stare_Imie, Stare_Nazwisko, Stare_Adres,
+        Stare_Numer_Komputera, Stare_Numer_Telefonu, Stare_Email,
+
+        Nowe_ID_Uzytkownika, Nowe_Imie, Nowe_Nazwisko, Nowe_Adres,
+        Nowe_Numer_Komputera, Nowe_Numer_Telefonu, Nowe_Email
+    )
+    SELECT
+        GETDATE(), 'DELETE', SYSTEM_USER,
+
+        d.ID_Uzytkownika, d.Imie, d.Nazwisko, d.Adres,
+        d.Numer_Komputera, d.Numer_Telefonu, d.Email,
+
+        0, '', '', '',
+        NULL, NULL, NULL
+    FROM deleted d;
+END;

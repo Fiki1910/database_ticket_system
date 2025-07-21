@@ -1,0 +1,64 @@
+DECLARE @NazwaUzytkownika VARCHAR(200)
+
+DECLARE CursorUzytkownika CURSOR FOR
+SELECT CONCAT(Imie, ' ', Nazwisko) FROM Uzytkownicy
+
+OPEN CursorUzytkownika
+
+FETCH NEXT FROM CursorUzytkownika INTO @NazwaUzytkownika
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    PRINT 'Użytkownik: ' + @NazwaUzytkownika
+    FETCH NEXT FROM CursorUzytkownika INTO @NazwaUzytkownika
+END
+
+CLOSE CursorUzytkownika
+DEALLOCATE CursorUzytkownika
+
+
+------------------
+
+DECLARE @NumerKomputeraLodz NVARCHAR (30)
+DECLARE KomputerCursor CURSOR FOR
+SELECT Numer_Komputera FROM Uzytkownicy
+
+OPEN KomputerCursor
+FETCH NEXT FROM KomputerCursor INTO @NumerKomputeraLodz
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+   IF LEFT(@NumerKomputeraLodz, 1)  = 'L'
+      PRINT 'Numer komputera, który należy do lokalizacji w Łodzi: ' + @NumerKomputeraLodz
+
+   FETCH NEXT FROM KomputerCursor INTO @NumerKomputeraLodz
+END
+
+CLOSE KomputerCursor
+DEALLOCATE KomputerCursor
+
+--------------------
+
+BEGIN TRAN
+DECLARE @Email NVARCHAR (50)
+
+DECLARE PustyEmailCursor CURSOR FOR
+SELECT Email FROM Uzytkownicy
+
+OPEN PustyEmailCursor
+FETCH NEXT FROM PustyEmailCursor INTO @Email
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+   IF @Email = ''
+   BEGIN
+       DELETE FROM Uzytkownicy WHERE Email = ''
+AND NOT EXISTS (
+    SELECT 1 FROM Zgloszenia WHERE Zgloszenia.Uzytkownik = Uzytkownicy.ID_Uzytkownika
+)
+   END
+
+   FETCH NEXT FROM PustyEmailCursor INTO @Email
+END
+
+CLOSE PustyEmailCursor
+DEALLOCATE PustyEmailCursor
