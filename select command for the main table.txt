@@ -1,0 +1,21 @@
+SELECT 
+    Z.ID_Zgloszenia,
+    U.Imie + ' ' + U.Nazwisko AS Uzytkownik,
+    Z.Opis_Problemu,
+    G.Nazwa_Grupy AS Przypisana_Grupa,
+    S.Nazwa AS Serwis,
+    Z.Pilnosc,
+    K.Rodzaj_Zgloszenia AS Kategoria_Zgloszenia,
+    Z.Rozwiazanie,
+    P.Nazwa_Przyczyny AS Przyczyna_Problemu,
+    Z.Data_Zgloszenia,
+    Z.Data_Rozwiazania,
+    St.Nazwa AS Status,
+    Z.Deadline
+FROM Zgloszenia Z
+JOIN Uzytkownicy U ON Z.Uzytkownik = U.ID_Uzytkownika
+JOIN Grupa_Wsparcia G ON Z.Przypisana_Grupa = G.ID_Grupy_Wsparcia
+JOIN Serwis S ON Z.Serwis = S.ID_Serwisu
+JOIN Kategoria_Zgloszenia K ON Z.Kategoria_Zgloszenia = K.ID_Kategorii_Zgloszenia
+JOIN Przyczyna_Problemu P ON Z.Przyczyna_Problemu = P.ID_Przyczyny
+JOIN Status St ON Z.Status = St.ID_Statusu;
